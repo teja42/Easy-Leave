@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <link href="static/main.css" type="text/css" rel="stylesheet">
+   <title>Easy Leave</title>
+</head>
+<style>
+   #container{
+      margin: 100px 0 0 0;
+   }
+</style>
+<body>
+
+   <header>
+      <div id="headerLeft">
+         <img src="static/logo.jpg" alt="logo" id="logo">
+         <h2>Easy Leave</h2>
+      </div>
+   </header>
+
+   <center id="container">
+      <div id="login">
+         <h2>Log In</h2>
+         <small>
+            Don't have an account? <a href="javascript:toogleLogin_Register()">Register</a>
+         </small>
+         <form method="post" action="/auth/login">
+            <input type="text" placeholder="id" name="Id" required> <br>
+            <input type="password" placeholder="password" name="password" required> <br>
+            <button onclick="javascript:login()">Log In</button>
+         </form>
+      </div>
+
+      <div id="register">
+         <h2>Register</h2>
+         <small>
+            Have an account? <a href="javascript:toogleLogin_Register()">Login</a>
+         </small>
+         <form method="post" action="auth/register">
+            <input type="text" placeholder="id" name="id" required> <br>
+            <input type="password" placeholder="password" name="password" required> <br>
+            <input type="password" placeholder="Repeat Password" name="repeatPassword" required> <br>
+            <button onclick="javascript:register()">Register</button>
+         </form>
+      </div>
+   </center>
+
+</body>
+<script src="static/main.js"></script>
+<script>
+   function toogleLogin_Register(){
+      if($('#login').style.display == 'none'){
+         $('#login').style.display = "block";
+         $('#register').style.display = "none";
+      } else {
+         $("#login").style.display = "none";
+         $("#register").style.display = "block";
+      }
+   }
+</script>
+</html>

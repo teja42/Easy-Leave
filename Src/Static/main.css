@@ -1,0 +1,55 @@
+*{
+   margin: 0;
+   padding: 0;
+   scroll-behavior: smooth;
+}
+
+header{
+   padding: 10px;
+}
+
+[x-button],button{
+   border: 0;
+   padding: 5px;
+   border-radius: 3px;
+   margin: 5px;
+   background-color: rgb(128, 0, 167);
+   color: white;
+   font-weight: 500;
+   font-size: 14px;
+   transition: background-color 0.5s;
+}
+
+[x-button]:hover,button:hover{
+   background-color: rgb(96, 0, 126);
+}
+
+header *{
+   font-weight: 400;
+   font-size: 20px;
+   color: grey;
+}
+
+#headerLeft *{
+   display: inline-block;
+}
+
+#logo{
+   width: 30px;
+}
+
+input,textarea{
+   border: 0;
+   outline: none;
+   padding: 10px;
+   border-bottom: 2px solid grey;
+   transition: border-bottom 1s;
+}
+
+input:focus,textarea:focus{
+   border-bottom: 2px solid rgb(128, 0, 167);
+}
+
+#register{
+   display: none;
+}
