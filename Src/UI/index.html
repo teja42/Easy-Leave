@@ -11,6 +11,11 @@
    #container{
       margin: 100px 0 0 0;
    }
+
+   #info{
+      color: red;
+   }
+
 </style>
 <body>
 
@@ -27,8 +32,8 @@
          <small>
             Don't have an account? <a href="javascript:toogleLogin_Register()">Register</a>
          </small>
-         <form method="post" action="/auth/login">
-            <input type="text" placeholder="id" name="Id" required> <br>
+         <form id="loginForm">
+            <input type="text" placeholder="id" name="id" required> <br>
             <input type="password" placeholder="password" name="password" required> <br>
             <button onclick="javascript:login()">Log In</button>
          </form>
@@ -39,17 +44,22 @@
          <small>
             Have an account? <a href="javascript:toogleLogin_Register()">Login</a>
          </small>
-         <form method="post" action="auth/register">
+         <form id="registerForm">
             <input type="text" placeholder="id" name="id" required> <br>
             <input type="password" placeholder="password" name="password" required> <br>
             <input type="password" placeholder="Repeat Password" name="repeatPassword" required> <br>
             <button onclick="javascript:register()">Register</button>
          </form>
       </div>
+
+      <div id="info">
+
+      </div>
+
    </center>
 
 </body>
-<script src="static/main.js"></script>
+<script src="/static/main.js"></script>
 <script>
    function toogleLogin_Register(){
       if($('#login').style.display == 'none'){
@@ -60,5 +70,44 @@
          $("#register").style.display = "block";
       }
    }
+
+   function login(){
+      let id = $("#loginForm>input[name='id']").value;
+      let password = $("#loginForm>input[name='password']").value;
+      ajax('post','/auth/login',`id=${id}&password=${password}`)
+      .then((success)=>{
+         console.log("logged in");
+      })
+      .catch((e)=>{
+         
+      });
+   }
+
+   function register(){
+
+      $("#info").innerHTML = null;
+
+      let id = $("#registerForm>input[name='id']").value;
+      let password = $("#registerForm>input[name='password']").value;
+      let repeatPassword = $("#registerForm>input[name='repeatPassword']").value;
+
+      console.log(id,password,repeatPassword);
+
+      if(password != repeatPassword){
+         $("#info").insertAdjacentHTML("beforeEnd",`<p>Passwords don't match</p>`);
+         return;
+      }
+
+      ajax('post','/auth/register',`id=${id}&password=${password}&repeatPassword=${repeatPassword}`)
+      .then((success)=>{
+         toogleLogin_Register();
+         alert("Registration successful. You can now log in");
+      })
+      .catch((err)=>{
+         $("#info").insertAdjacentHTML("beforeEnd",`<p>An unexpected error occured. It's most likely your fault.</p>`);
+      });
+
+   }
+
 </script>
 </html>
