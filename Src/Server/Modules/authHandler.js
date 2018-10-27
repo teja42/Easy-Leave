@@ -28,11 +28,11 @@ app.post("/register",(req,res)=>{
    })
    .catch((err)=>{
       console.log(err);
-      if(err.code == 11000) res.status(400).send("This id is already registered.");
+      if(err.code == 11000) res.status(400).send("This id has already been registered.");
       else res.sendStatus(500);
    });
 });
-
+      
 app.post("/login",(req,res)=>{
    let userDoc;
 
