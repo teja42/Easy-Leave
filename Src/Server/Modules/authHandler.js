@@ -10,13 +10,16 @@ app.use((req,res,next)=>{
    next();
 })
 
-app.get("/register",(req,res)=>{
+app.post("/register",(req,res)=>{
+
+   if(!req.body.name) return res.sendStatus(400);
 
    bcrypt.hash(req.body.password,14)
    .then((hash)=>{
       return users.create({
          id: req.body.id,
          password: hash,
+         name: req.body.name,
          type: 2
       });
    })
@@ -24,35 +27,42 @@ app.get("/register",(req,res)=>{
       res.sendStatus(200);
    })
    .catch((err)=>{
-      res.sendStatus(500);
+      console.log(err);
+      if(err.code == 11000) res.status(400).send("This id is already registered.");
+      else res.sendStatus(500);
    });
 });
 
-app.get("/login",(req,res)=>{
+app.post("/login",(req,res)=>{
    let userDoc;
 
    users.findOne({id: req.body.id})
    .then((doc)=>{
       userDoc = doc;
       if(!doc) return res.sendStatus(401);
-      return bcrypt.compare(req.body.password,doc.password)
+      return bcrypt.compare(req.body.password,doc.password);
    })
    .then((valid)=>{
+
+      if(!valid) return new Promise.reject();
+
       let payload = {
-         id: userDoc.id
+         id: userDoc.id,
+         exp: Math.floor(Date.now() / 1000) + (2* 60 * 60)
       };
       payload = JSON.stringify(payload);
-      jwt.sign(payload,process.$config.jwtSecret,{
-         expiresIn: "2h"
-      },(err,token)=>{
-         if(err) return res.sendStatus(500);
-         res.cookie("auth",token);
-         res.redirect('/home');
+      jwt.sign(payload,process.$config.jwtSecret,
+         (err,token)=>{
+            if(err){
+               console.debug(err);
+               return res.sendStatus(500);
+            }
+            res.cookie("auth",token);
+            res.redirect('/home');
       });
    })
    .catch((err)=>{
-      console.debug(err);
-      res.sendStatus(500);
+      res.sendStatus(401);
    });
 });
 

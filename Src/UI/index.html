@@ -35,8 +35,8 @@
          <form id="loginForm">
             <input type="text" placeholder="id" name="id" required> <br>
             <input type="password" placeholder="password" name="password" required> <br>
-            <button onclick="javascript:login()">Log In</button>
          </form>
+         <button onclick="javascript:login()">Log In</button>
       </div>
 
       <div id="register">
@@ -46,10 +46,11 @@
          </small>
          <form id="registerForm">
             <input type="text" placeholder="id" name="id" required> <br>
+            <input type="text" placeholder="Name" name="name" required> <br>
             <input type="password" placeholder="password" name="password" required> <br>
             <input type="password" placeholder="Repeat Password" name="repeatPassword" required> <br>
-            <button onclick="javascript:register()">Register</button>
          </form>
+         <button onclick="javascript:register()">Register</button>
       </div>
 
       <div id="info">
@@ -72,14 +73,19 @@
    }
 
    function login(){
+
+      $("#info").innerHTML = null;
+
       let id = $("#loginForm>input[name='id']").value;
       let password = $("#loginForm>input[name='password']").value;
       ajax('post','/auth/login',`id=${id}&password=${password}`)
       .then((success)=>{
-         console.log("logged in");
+         window.location = "/home";
       })
       .catch((e)=>{
-         
+         console.log(e);
+         let errMsg = e.status=="401"?"Authentication Failed":"An error occured";
+         $("#info").insertAdjacentHTML('beforeEnd',`<p>${errMsg}</p>`)
       });
    }
 
@@ -90,21 +96,27 @@
       let id = $("#registerForm>input[name='id']").value;
       let password = $("#registerForm>input[name='password']").value;
       let repeatPassword = $("#registerForm>input[name='repeatPassword']").value;
-
-      console.log(id,password,repeatPassword);
+      let name = $("#registerForm>input[name='name']").value;
 
       if(password != repeatPassword){
          $("#info").insertAdjacentHTML("beforeEnd",`<p>Passwords don't match</p>`);
          return;
       }
 
-      ajax('post','/auth/register',`id=${id}&password=${password}&repeatPassword=${repeatPassword}`)
+      ajax(
+         'post',
+         '/auth/register',
+         `id=${id}&password=${password}&repeatPassword=${repeatPassword}&name=${name}`
+      )
       .then((success)=>{
          toogleLogin_Register();
          alert("Registration successful. You can now log in");
       })
       .catch((err)=>{
-         $("#info").insertAdjacentHTML("beforeEnd",`<p>An unexpected error occured. It's most likely your fault.</p>`);
+         console.log(err);
+         let errMsg = "An unexpected error occured.";
+         if(err.res) errMsg = err.res;
+         $("#info").insertAdjacentHTML("beforeEnd",`<p>${errMsg}</p>`);
       });
 
    }

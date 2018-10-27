@@ -1,6 +1,8 @@
 const express = require("express");
 const path = require("path");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 process.$config = {
    baseDir : path.join(__dirname+"/../"),
@@ -16,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
    extended: false
 }));
+app.use(cookieParser());
 
 app.use("/static",express.static(process.$config.baseDir+"/Static"));
 
@@ -23,6 +26,20 @@ app.get("/",(req,res)=>{
    res.sendFile(process.$config.baseDir+"/UI/index.html");
 });
 
-app.get('/auth',authHandler);
+app.use('/auth',authHandler);
+
+app.use((req,res,next)=>{
+   jwt.verify(req.cookies.auth,process.$config.jwtSecret,(err,decoded)=>{
+      if(err) res.sendStatus(401);
+      else{
+         req.$token = decoded;
+         next();
+      }
+   });
+});
+
+app.get("/home",(req,res)=>{
+   res.send("If you're seeing this then you're logged in.");
+});
 
 app.listen(3000,()=>console.log("Server Online"));

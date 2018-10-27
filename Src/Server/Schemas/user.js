@@ -17,6 +17,10 @@ let userSchema = new mongoose.Schema({
    type: {
       type: Number,
       required: true
+   },
+   name: {
+      type: String,
+      required: true
    }
 });
 
