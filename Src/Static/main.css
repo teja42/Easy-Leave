@@ -25,6 +25,11 @@ header{
    background-color: rgb(96, 0, 126);
 }
 
+[disabled]{
+   opacity: 0.8;
+   cursor: not-allowed;
+}
+
 header *{
    font-weight: 400;
    font-size: 20px;

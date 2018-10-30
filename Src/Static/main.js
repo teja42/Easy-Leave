@@ -16,3 +16,16 @@ function ajax(method,url,query=''){
       xhttp.send(encodeURI(query));
    });
 }
+
+function buttonClickAnim(btn){
+   console.log(btn);
+   let originalHTML = btn.innerHTML;
+   btn.innerHTML = "Loading...";
+   btn.setAttribute("disabled","");
+   return {
+      end: ()=>{
+         btn.innerHTML = originalHTML;
+         btn.removeAttribute("disabled");
+      }
+   }
+}

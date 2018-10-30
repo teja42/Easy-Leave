@@ -39,7 +39,7 @@ app.use((req,res,next)=>{
 });
 
 app.get("/home",(req,res)=>{
-   res.send("If you're seeing this then you're logged in.");
+   res.sendFile(process.$config.baseDir+"/UI/home.html");
 });
 
 app.listen(3000,()=>console.log("Server Online"));

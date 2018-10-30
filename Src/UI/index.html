@@ -36,7 +36,7 @@
             <input type="text" placeholder="id" name="id" required> <br>
             <input type="password" placeholder="password" name="password" required> <br>
          </form>
-         <button onclick="javascript:login()">Log In</button>
+         <button id="loginBtn" onclick="javascript:login()">Log In</button>
       </div>
 
       <div id="register">
@@ -50,7 +50,7 @@
             <input type="password" placeholder="password" name="password" required> <br>
             <input type="password" placeholder="Repeat Password" name="repeatPassword" required> <br>
          </form>
-         <button onclick="javascript:register()">Register</button>
+         <button id="registerBtn" onclick="javascript:register()">Register</button>
       </div>
 
       <div id="info">
@@ -73,7 +73,7 @@
    }
 
    function login(){
-
+      let btnAnim = buttonClickAnim($('#loginBtn'));
       $("#info").innerHTML = null;
 
       let id = $("#loginForm>input[name='id']").value;
@@ -86,11 +86,14 @@
          console.log(e);
          let errMsg = e.status=="401"?"Authentication Failed":"An error occured";
          $("#info").insertAdjacentHTML('beforeEnd',`<p>${errMsg}</p>`)
-      });
+      })
+      .finally(()=>{
+         btnAnim.end();
+      })
    }
 
    function register(){
-
+      let btnAnim = buttonClickAnim($("#registerBtn"));
       $("#info").innerHTML = null;
 
       let id = $("#registerForm>input[name='id']").value;
@@ -117,7 +120,8 @@
          let errMsg = "An unexpected error occured.";
          if(err.res) errMsg = err.res;
          $("#info").insertAdjacentHTML("beforeEnd",`<p>${errMsg}</p>`);
-      });
+      })
+      .finally(btnAnim.end);
 
    }
 
