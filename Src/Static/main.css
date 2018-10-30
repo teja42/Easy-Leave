@@ -8,20 +8,24 @@ header{
    padding: 10px;
 }
 
-[x-button],button{
+button,[x-button]{
    border: 0;
+   cursor: pointer;
+   outline: none;
+}
+
+[x-button],.button-sd{
    padding: 5px;
    border-radius: 3px;
    margin: 5px;
    background-color: rgb(128, 0, 167);
    color: white;
-   cursor: pointer;
    font-weight: 500;
    font-size: 14px;
    transition: background-color 0.5s;
 }
 
-[x-button]:hover,button:hover{
+[x-button]:hover,.button-sd:hover{
    background-color: rgb(96, 0, 126);
 }
 
