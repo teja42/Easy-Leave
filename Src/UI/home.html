@@ -8,10 +8,6 @@
    <title>Home - EasyLeave</title>
 </head>
 <style>
-   #container >*{
-      display: inline-block;
-   }
-
    #windowLoad{
       position: fixed;
       top: 0;
@@ -29,27 +25,26 @@
       width: 250px;
       margin-top: 10px;
       padding: 10px;
+      float: left;
       height: calc(100vh - 100px);
       border-right: 2px solid rgb(96, 0, 126);
    }
 
-   .button-style-grey{
-      background-color: rgb(233, 233, 233);
-      border-left: 2px solid transparent;
-      transition: background-color 0.5s;
-      transition: border-left 0.5s;
-      padding: 10px;
-      margin: 15px 0;
-      width: 100%;
-      display: block;
-      box-shadow: 0 1px 2px 2px rgba(0,0,0,0.2);
-   }
-   .button-style-grey:hover{
-      border-left: 2px solid rgb(39, 39, 39);
-      background-color: rgb(190, 190, 190);
+   #mainContent{
+      margin-left: 280px;
    }
 
-</style>
+   .heading{
+      margin: 15px 0;
+   }
+
+   #info{
+      border-left: solid rgb(255, 153, 0) 2px;
+      margin: 5px;
+      padding-left: 3px;
+   }
+
+</style> 
 <body>
 
    <header>
@@ -61,19 +56,47 @@
 
    <div id="container">
       <center id="navLinks">
-         <button class="button-style-grey" onclick="viewSummary()">Summary</button>
+         <a class="button-style-grey" href="#summary">Summary</a>
          <div x-for-student>
-            <button class="button-style-grey" onclick="viewRequestLeave()">Request Leave</button>
-            <button class="button-style-grey" onclick="viewLeaveHistory()">Leave History</button>
+            <a class="button-style-grey" href="#requestLeave">Request Leave</a>
+            <a class="button-style-grey" href="#leaveHistory">Leave History</a>
          </div>
 
          <div x-for-faculty>
-            <button class="button-style-grey" onclick="viewPendingApproval()">Pending Approval</button>
-            <button class="button-style-grey" onclick="viewAllRequests()">View All Requests</button>
+            <a class="button-style-grey" href="#pendingApproval">Pending Approval</a>
+            <a class="button-style-grey" href="#viewAllRequests">View All Requests</a>
          </div>
 
       </center>
       <div id="mainContent">
+         <div class="targetToShow" id="summary">
+            <h2 class="heading">Summary</h2>
+         </div>
+
+         <div x-for-student>
+            <div class="targetToShow" id="requestLeave">
+               <h2 class="heading">Apply for leave</h2>
+               <form id="applyForLeaveForm">
+                  <input placeholder="Subject" type="text" name="subject" style="width: 300px">
+                  <br> <br>
+                  <p>Description : </p> <textarea name="desc" style="min-width: 300px; height: 150px;"></textarea>
+                  <br> <br>
+                  <label>From: </label>
+                  <input type="date" name="fromDate">
+                  <label>To: </label>
+                  <input type="date" name="toDate">
+               </form>
+               <button class="button-sd" id="applyLeaveBtn" onclick="javascript:applyForLeave()">Apply</button>
+            </div>
+            <div class="targetToShow" id="leaveHistory"></div>
+         </div>
+
+         <div x-for-faculty>
+            <div class="targetToShow" id="pendingApproval"></div>
+            <div class="targetToShow" id="viewAllRequests"></div>
+         </div>
+
+         <div id="info"></div>
 
       </div>
    </div>
@@ -88,10 +111,59 @@
       let res = JSON.parse(resp.res);
       let typeToHide = res.type=="faculty"?"student":"faculty";
       document.styleSheets[0].insertRule(`[x-for-${typeToHide}]{ display: none;}`,0);
+      $("#windowLoad").innerHTML = "Done.";
+      $("#windowLoad").style.animation = "fadeOut linear 2s";
+      setTimeout(()=>{
+         $("#windowLoad").style.display = "none";
+      },2000);
+      let summary = {
+         Name: res.name,
+         "Account Type": res.type==1?"Faculty":"Student"
+      };
+      if(res.type==2){
+         summary["Leaves Approved this month "] = res.numLeaves;
+      } else if(res.type==1){
+         summary["No of Leaves Processed this month "] = res.numLeavesProcessed;
+      }
+      for(obj in summary){
+         $("#summary").insertAdjacentHTML("beforeEnd",`<strong>${obj} : </strong><span>${summary[obj]}</span><br>`);
+      }
    })
    .catch((err)=>{
       $("#windowLoad").innerHTML = `An Error Occured! HTTP ${err.status} <br> <button class="button-sd" onclick="window.location=window.location;">Reload</button>`
    });
+
+   let clearInfo = ()=>{
+      $("#info").innerHTML = null;
+   }
+
+   let addInfo = (info)=>{
+      $("#info").innerHTML = info;
+   }
+
+   function applyForLeave(){
+      clearInfo();
+      let subject = $("#applyForLeaveForm>input[name='subject']").value;
+      let desc = $("#applyForLeaveForm>textarea[name='desc']").value;
+      let fromDate = $("#applyForLeaveForm>input[name='fromDate']").value;
+      let toDate = $("#applyForLeaveForm>input[name='toDate']").value;
+
+      if(!subject || !desc || !fromDate || !toDate){
+         return addInfo("All fields are required");
+      }
+
+      let btn = buttonClickAnim($("#applyLeaveBtn"));
+
+      ajax('post','/api/s/applyForLeave',`subject=${subject}&desc=${desc}&fromDate=${fromDate}&toDate=${toDate}`)
+      .then((res)=>{
+         addInfo("Request sucessfully sent");
+      })
+      .catch((err)=>{
+         addInfo(`${err.res}` || `HTTP ${err.status}`);
+      })
+      .finally(btn.end);
+
+   }
 
 </script>
 </html>

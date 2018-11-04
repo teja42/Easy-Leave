@@ -11,6 +11,7 @@ process.$config = {
 };
 
 const authHandler = require("./Modules/authHandler");
+const apiRouter = require("./Modules/apiRouter");
 const users = require("./Schemas/user");
 
 let app = express();
@@ -28,7 +29,7 @@ app.get("/",(req,res)=>{
 
 app.use('/auth',authHandler);
 
-app.use((req,res,next)=>{
+app.use((req,res,next)=>{ // Middleware to check if logged in.
    jwt.verify(req.cookies.auth,process.$config.jwtSecret,(err,decoded)=>{
       if(err) res.sendStatus(401);
       else{
@@ -41,5 +42,7 @@ app.use((req,res,next)=>{
 app.get("/home",(req,res)=>{
    res.sendFile(process.$config.baseDir+"/UI/home.html");
 });
+
+app.use("/api",apiRouter);
 
 app.listen(3000,()=>console.log("Server Online"));

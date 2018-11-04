@@ -13,20 +13,40 @@ let userSchema = new mongoose.Schema({
       required: true,
       type: Number
    },
-   title: {
+   monthYear: {
+      type: String,
+      required: true
+   },
+   subject: {
+      type: String,
+      required: true
+   },
+   fromDate: {
+      required: true,
+      type: String
+   },
+   toDate: {
       type: String,
       required: true
    },
    desc: {
       type: String,
       required: true
+   },
+   actionBy: {
+      type: String
+   },
+   status: {
+      type: Number,
+      required: true,
+      default: 0
    }
 });
 
-/* type
-0 - admin
-1 - faculty
-2 - student
+/* status
+-1 - rejected
+0  - pending
+1  - approved
 */
 
 module.exports = mongoose.model("leave",userSchema);

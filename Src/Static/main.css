@@ -4,6 +4,11 @@
    scroll-behavior: smooth;
 }
 
+@keyframes fadeOut{
+   0% {opacity: 1;}
+   100% {opacity: 0;}
+}
+
 header{
    padding: 10px;
 }
@@ -11,6 +16,8 @@ header{
 button,[x-button]{
    border: 0;
    cursor: pointer;
+   text-decoration: none;
+   color: rgb(29, 29, 29);
    outline: none;
 }
 
@@ -32,6 +39,13 @@ button,[x-button]{
 [disabled]{
    opacity: 0.8;
    cursor: not-allowed;
+}
+
+.targetToShow{
+   display: none;
+}
+.targetToShow:target{
+   display: block;
 }
 
 header *{
@@ -60,6 +74,27 @@ input:focus,textarea:focus{
    border-bottom: 2px solid rgb(128, 0, 167);
 }
 
+textarea{
+   background-color: whitesmoke;
+}
+
 #register{
    display: none;
+}
+
+.button-style-grey{
+   background-color: rgb(233, 233, 233);
+   border-left: 2px solid transparent;
+   transition: background-color 0.25s, border-left 0.5s;
+   text-decoration: none;
+   color: rgb(29,29,29);
+   display: inline-block;
+   padding: 10px;
+   margin: 15px 0;
+   display: block;
+   box-shadow: 0 1px 2px 2px rgba(0,0,0,0.2);
+}
+.button-style-grey:hover,.button-style-grey-selected{
+   border-left: 2px solid rgb(39, 39, 39);
+   background-color: rgb(190, 190, 190);
 }

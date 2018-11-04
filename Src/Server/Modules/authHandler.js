@@ -48,7 +48,8 @@ app.post("/login",(req,res)=>{
 
       let payload = {
          id: userDoc.id,
-         exp: Math.floor(Date.now() / 1000) + (2* 60 * 60)
+         exp: Math.floor(Date.now() / 1000) + (2* 60 * 60),
+         type: userDoc.type
       };
       payload = JSON.stringify(payload);
       jwt.sign(payload,process.$config.jwtSecret,
