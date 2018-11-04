@@ -88,7 +88,17 @@
                </form>
                <button class="button-sd" id="applyLeaveBtn" onclick="javascript:applyForLeave()">Apply</button>
             </div>
-            <div class="targetToShow" id="leaveHistory"></div>
+            <div class="targetToShow" id="leaveHistory">
+               <form id="leaveHistoryForm">
+                  <span>Show </span> <input name="numResults" value="10" type="number"> <span>results</span>
+                  <br>
+                  <button class="button-sd" id="leaveHistoryBtn" onclick="javascript:getLeaveHistory()">Fetch</button>
+               </form>
+               <table>
+                  <tbody id="leaveHistoryTableBody">
+                  </tbody>
+               </table>
+            </div>
          </div>
 
          <div x-for-faculty>
@@ -103,67 +113,5 @@
    
 </body>
 <script src="static/main.js"></script>
-<script>
-   document.body.insertAdjacentHTML("beforeEnd",`<center id="windowLoad">Loading...</center>`);
-
-   ajax("get","/api/userInfo")
-   .then((resp)=>{
-      let res = JSON.parse(resp.res);
-      let typeToHide = res.type=="faculty"?"student":"faculty";
-      document.styleSheets[0].insertRule(`[x-for-${typeToHide}]{ display: none;}`,0);
-      $("#windowLoad").innerHTML = "Done.";
-      $("#windowLoad").style.animation = "fadeOut linear 2s";
-      setTimeout(()=>{
-         $("#windowLoad").style.display = "none";
-      },2000);
-      let summary = {
-         Name: res.name,
-         "Account Type": res.type==1?"Faculty":"Student"
-      };
-      if(res.type==2){
-         summary["Leaves Approved this month "] = res.numLeaves;
-      } else if(res.type==1){
-         summary["No of Leaves Processed this month "] = res.numLeavesProcessed;
-      }
-      for(obj in summary){
-         $("#summary").insertAdjacentHTML("beforeEnd",`<strong>${obj} : </strong><span>${summary[obj]}</span><br>`);
-      }
-   })
-   .catch((err)=>{
-      $("#windowLoad").innerHTML = `An Error Occured! HTTP ${err.status} <br> <button class="button-sd" onclick="window.location=window.location;">Reload</button>`
-   });
-
-   let clearInfo = ()=>{
-      $("#info").innerHTML = null;
-   }
-
-   let addInfo = (info)=>{
-      $("#info").innerHTML = info;
-   }
-
-   function applyForLeave(){
-      clearInfo();
-      let subject = $("#applyForLeaveForm>input[name='subject']").value;
-      let desc = $("#applyForLeaveForm>textarea[name='desc']").value;
-      let fromDate = $("#applyForLeaveForm>input[name='fromDate']").value;
-      let toDate = $("#applyForLeaveForm>input[name='toDate']").value;
-
-      if(!subject || !desc || !fromDate || !toDate){
-         return addInfo("All fields are required");
-      }
-
-      let btn = buttonClickAnim($("#applyLeaveBtn"));
-
-      ajax('post','/api/s/applyForLeave',`subject=${subject}&desc=${desc}&fromDate=${fromDate}&toDate=${toDate}`)
-      .then((res)=>{
-         addInfo("Request sucessfully sent");
-      })
-      .catch((err)=>{
-         addInfo(`${err.res}` || `HTTP ${err.status}`);
-      })
-      .finally(btn.end);
-
-   }
-
-</script>
+<script src="static/home.js"></script>
 </html>

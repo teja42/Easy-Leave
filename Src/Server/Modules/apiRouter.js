@@ -60,6 +60,22 @@ app.post("/s/applyForLeave",(req,res)=>{
    });
 });
 
+app.post("/s/leaveHistory",(req,res)=>{
+   if(!req.body.numResults)
+      return res.sendStatus(400);
+
+   leave
+   .find({id: req.$token.id})
+   .limit(parseInt(req.body.numResults))
+   .then((docs)=>{
+      res.json(docs);
+   })
+   .catch((err)=>{
+      console.debug(err);
+      res.sendStatus(500);
+   });
+});
+
 app.use("/f",(req,res,next)=>{
    if(req.$token.type!=1) res.sendStatus(400);
    else next();

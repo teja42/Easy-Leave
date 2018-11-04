@@ -98,3 +98,13 @@ textarea{
    border-left: 2px solid rgb(39, 39, 39);
    background-color: rgb(190, 190, 190);
 }
+
+td{
+   padding: 20px 15px;
+}
+tr{
+   border-collapse: collapse;
+   border-bottom: 1px solid grey;
+}
+
+
