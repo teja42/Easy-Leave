@@ -20,11 +20,6 @@ try{
          monthYear
       });
       json.numLeaves = numLeaves;
-   } else if(req.$token.type == 1){
-      let numLeavesProcessed = await leave.countDocuments({
-         actionBy: req.$token.id,
-         monthYear
-      });
    }
    res.json(json);
 } catch(e){
@@ -34,7 +29,7 @@ try{
 });
 
 app.use("/s",(req,res,next)=>{
-   if(req.$token.type!=2) res.sendStatus(400);
+   if(req.$token.type!=2) res.sendStatus(401);
    else next();
 });
 
@@ -77,8 +72,48 @@ app.post("/s/leaveHistory",(req,res)=>{
 });
 
 app.use("/f",(req,res,next)=>{
-   if(req.$token.type!=1) res.sendStatus(400);
+   if(req.$token.type!=1) res.sendStatus(401);
    else next();
+});
+
+app.post('/f/pendingApproval',async (req,res)=>{
+   let pages;
+   try{
+      pages = await leave.countDocuments({status: 0});
+   }catch(e){
+      return res.sendStatus(500);
+   }
+
+   leave
+   .find({status: 0})
+   .limit(10)
+   .skip(10*(req.body.page-1))
+   .then((docs)=>{
+      let obj = {
+         pages,
+         docs
+      };
+      res.json(obj);
+   })
+   .catch((err)=>{
+      console.debug(err);
+      res.sendStatus(500);
+   });
+});
+
+app.post('/f/updateLeaveRequest',(req,res)=>{
+   if(!req.body.approve || !req.body._id)
+      return res.sendStatus(400);
+
+   leave
+   .updateOne({_id: req.body._id},{status: req.body.approve?1:-1})
+   .then((resp)=>{
+      res.sendStatus(200);
+   })
+   .catch((err)=>{
+      console.debug(err);
+      res.sendStatus(500);
+   });
 });
 
 module.exports = app;

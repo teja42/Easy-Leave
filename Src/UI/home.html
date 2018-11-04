@@ -32,6 +32,7 @@
 
    #mainContent{
       margin-left: 280px;
+      overflow: scroll;
    }
 
    .heading{
@@ -42,6 +43,13 @@
       border-left: solid rgb(255, 153, 0) 2px;
       margin: 5px;
       padding-left: 3px;
+   }
+
+   .leave{
+      border-left: 2px solid rgb(255, 60, 93);
+      border-bottom: 1px solid rgb(201, 201, 201);
+      margin: 20px 10px;
+      padding-left: 10px;
    }
 
 </style> 
@@ -74,6 +82,7 @@
          </div>
 
          <div x-for-student>
+
             <div class="targetToShow" id="requestLeave">
                <h2 class="heading">Apply for leave</h2>
                <form id="applyForLeaveForm">
@@ -88,6 +97,7 @@
                </form>
                <button class="button-sd" id="applyLeaveBtn" onclick="javascript:applyForLeave()">Apply</button>
             </div>
+
             <div class="targetToShow" id="leaveHistory">
                <form id="leaveHistoryForm">
                   <span>Show </span> <input name="numResults" value="10" type="number"> <span>results</span>
@@ -99,10 +109,22 @@
                   </tbody>
                </table>
             </div>
+
          </div>
 
          <div x-for-faculty>
-            <div class="targetToShow" id="pendingApproval"></div>
+
+            <div class="targetToShow" id="pendingApproval">
+               <h2>Pending Leave Requests</h2>
+               <div id="pendingApprovalContent">
+                  <p class="heading">Choose page # and click 'Go'</p>
+               </div>
+               <div id="pendingApprovalPagination">
+                  Page : <input type="number" name="page"> of <span id="pendingApprovalTotalPages"></span>
+                  <button class="button-sd" id="pendingApprovalPaginationBtn" onclick="javascript:pendingApproval()">Go</button>
+               </div>
+            </div>
+
             <div class="targetToShow" id="viewAllRequests"></div>
          </div>
 

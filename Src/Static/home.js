@@ -3,7 +3,8 @@ document.body.insertAdjacentHTML("beforeEnd", `<center id="windowLoad">Loading..
 ajax("get", "/api/userInfo")
    .then((resp) => {
       let res = JSON.parse(resp.res);
-      let typeToHide = res.type == "faculty" ? "student" : "faculty";
+      console.log(res);
+      let typeToHide = res.type == 1 ? "student" : "faculty";
       document.styleSheets[0].insertRule(`[x-for-${typeToHide}]{ display: none;}`, 0);
       $("#windowLoad").innerHTML = "Done.";
       $("#windowLoad").style.animation = "fadeOut linear 2s";
@@ -16,8 +17,6 @@ ajax("get", "/api/userInfo")
       };
       if (res.type == 2) {
          summary["Leaves Approved this month "] = res.numLeaves;
-      } else if (res.type == 1) {
-         summary["No of Leaves Processed this month "] = res.numLeavesProcessed;
       }
       for (obj in summary) {
          $("#summary").insertAdjacentHTML("beforeEnd", `<strong>${obj} : </strong><span>${summary[obj]}</span><br>`);
@@ -91,7 +90,6 @@ function getLeaveHistory() {
             <td>Status</td>
          </tr>
       `);
-      console.log(res);
          for (let i = 0; i < res.length; i++) {
             tbody.insertAdjacentHTML('beforeEnd',
                `
@@ -112,4 +110,63 @@ function getLeaveHistory() {
       })
       .finally(btn.end);
 
+}
+
+function pendingApproval(page){
+   clearInfo();
+   if(!page)
+      page = $("#pendingApprovalPagination>input[name='page']").value;
+   if(!page || page<1){
+      return addInfo("Page Number is not valid.");
+   }
+
+   let btn = buttonClickAnim($("#pendingApprovalPaginationBtn"));
+
+   ajax('post','/api/f/pendingApproval',`page=${page}`)
+   .then((resp)=>{
+      let response = JSON.parse(resp.res);
+      let requests = response.docs;
+      $("#pendingApprovalTotalPages").innerHTML = response.pages;
+      let body = $("#pendingApprovalContent");
+      body.innerHTML = null;
+      for(let i=0; i<requests.length; i++){
+         body.insertAdjacentHTML('beforeEnd',
+         `
+         <div class='leave' x_id='${requests[i]._id}'>
+            <h4>${requests[i].subject}</h4>
+            <p>${requests[i].desc}</p>
+            <p>${requests[i].name} - ${requests[i].id}</p>
+            <strong>Leaves Approved this month : ${requests[i].leavesApproved}</strong>
+            <br>
+            <button class="button-sd" onclick="javascript:processLeaveRequest(this,'${requests[i]._id}',${true})">Approve</button>
+            <button class="button-sd red" onclick="javascript:processLeaveRequest(this,'${requests[i]._id}',${false})">Reject</button>
+         </div>
+         `
+         );
+      }
+      if(requests.length==0){
+         body.insertAdjacentHTML('beforeEnd','<h4 style="margin: 20px;">No Pending Requests</h4>');
+      }
+   })
+   .catch((err)=>{
+      console.log(err);
+      addInfo(`HTTP ${err.status}\n${err.res}`);
+   })
+   .finally(btn.end);
+
+}
+
+function processLeaveRequest(btn,_id,approve){
+   clearInfo();
+   let _btn = buttonClickAnim(btn);
+   console.log(_id);
+   ajax('post','/api/f/updateLeaveRequest',`approve=${approve}&_id=${_id}`)
+   .then((res)=>{
+      removeElement($(`[x_id="${_id}"]`));
+   })
+   .catch((err)=>{
+      console.log(err);
+      addInfo(`HTTP ${err.status}\n${err.res}`);
+   })
+   .finally(_btn.end);
 }

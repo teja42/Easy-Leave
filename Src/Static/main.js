@@ -29,3 +29,11 @@ function buttonClickAnim(btn){
       }
    }
 }
+
+function removeElement(ele){
+   console.log(ele);
+   ele.style.animation = "collapse linear 0.5s";
+   setTimeout(()=>{
+      ele.parentNode.removeChild(ele);
+   },500);
+}

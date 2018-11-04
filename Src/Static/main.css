@@ -9,6 +9,17 @@
    100% {opacity: 0;}
 }
 
+@keyframes collapse{
+   from {
+      max-height: 200px;
+      overflow: hidden;
+   }
+   to {
+      max-height: 0;
+      overflow: hidden;
+   }
+}
+
 header{
    padding: 10px;
 }
@@ -107,4 +118,10 @@ tr{
    border-bottom: 1px solid grey;
 }
 
-
+.red {
+   background-color: red;
+   transition: background-color 0.5s;
+}
+.red:hover{
+   background-color: rgb(214, 0, 0);
+}
