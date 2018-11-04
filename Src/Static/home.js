@@ -1,9 +1,11 @@
 document.body.insertAdjacentHTML("beforeEnd", `<center id="windowLoad">Loading...</center>`);
 
+let USER_TYPE;
+
 ajax("get", "/api/userInfo")
    .then((resp) => {
       let res = JSON.parse(resp.res);
-      console.log(res);
+      USER_TYPE = res.type;
       let typeToHide = res.type == 1 ? "student" : "faculty";
       document.styleSheets[0].insertRule(`[x-for-${typeToHide}]{ display: none;}`, 0);
       $("#windowLoad").innerHTML = "Done.";
@@ -13,7 +15,8 @@ ajax("get", "/api/userInfo")
       }, 2000);
       let summary = {
          Name: res.name,
-         "Account Type": res.type == 1 ? "Faculty" : "Student"
+         "Account Type": res.type == 1 ? "Faculty" : "Student",
+         Id: res.id
       };
       if (res.type == 2) {
          summary["Leaves Approved this month "] = res.numLeaves;
@@ -68,7 +71,7 @@ function getLeaveHistory() {
 
    let btn = buttonClickAnim($("#leaveHistoryBtn"));
 
-   ajax('post', `/api/s/leaveHistory`, `numResults=${numResults}`)
+   ajax('post','/api/leaveHistory',`numResults=${numResults}`)
       .then((resp) => {
          let res = JSON.parse(resp.res);
          let tbody = $("#leaveHistoryTableBody");
@@ -82,24 +85,35 @@ function getLeaveHistory() {
          tbody.innerHTML = null;
          tbody.insertAdjacentHTML('beforeEnd',
             `
-         <tr style="background-color: whitesmoke">
-            <td>#</td>
-            <td>Date Applied</td>
-            <td>Subject</td>
-            <td>From - To</td>
-            <td>Status</td>
-         </tr>
-      `);
+               <tr style="background-color: whitesmoke">
+                  <td>#</td>
+                  <td>Date Applied</td>
+            `
+            +
+            (USER_TYPE==1 ? 
+                  `<td>id</td>`: ``)
+            +
+            `
+                  <td>Subject</td>
+                  <td>From - To</td>
+                  <td>Status</td>
+               </tr>
+            `);
          for (let i = 0; i < res.length; i++) {
             tbody.insertAdjacentHTML('beforeEnd',
-               `
-            <tr>
-               <td>${i+1}</td>
-               <td>${new Date(res[i].ts).toLocaleString()}</td>
-               <td>${res[i].subject}</td>
-               <td>${res[i].fromDate} - ${res[i].toDate}</td>
-               <td>${statusCodeToString(res[i].status)}</td>
-            </tr>
+            `
+               <tr>
+                  <td>${i+1}</td>
+                  <td>${new Date(res[i].ts).toLocaleString()}</td>
+            ` 
+            +
+            (USER_TYPE==1? 
+                  `<td>${res[i].id}</td>`:``)
+            +`
+                  <td>${res[i].subject}</td>
+                  <td>${res[i].fromDate} - ${res[i].toDate}</td>
+                  <td>${statusCodeToString(res[i].status)}</td>
+               </tr>
             `
             );
          }

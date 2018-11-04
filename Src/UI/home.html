@@ -67,18 +67,30 @@
          <a class="button-style-grey" href="#summary">Summary</a>
          <div x-for-student>
             <a class="button-style-grey" href="#requestLeave">Request Leave</a>
-            <a class="button-style-grey" href="#leaveHistory">Leave History</a>
          </div>
 
          <div x-for-faculty>
             <a class="button-style-grey" href="#pendingApproval">Pending Approval</a>
-            <a class="button-style-grey" href="#viewAllRequests">View All Requests</a>
          </div>
+
+         <a class="button-style-grey" href="#leaveHistory">Leave History</a>
 
       </center>
       <div id="mainContent">
          <div class="targetToShow" id="summary">
             <h2 class="heading">Summary</h2>
+         </div>
+
+         <div class="targetToShow" id="leaveHistory">
+            <form id="leaveHistoryForm">
+               <span>Show </span> <input name="numResults" value="10" type="number"> <span>results</span>
+               <br>
+               <button class="button-sd" id="leaveHistoryBtn" onclick="javascript:getLeaveHistory()">Fetch</button>
+            </form>
+            <table>
+               <tbody id="leaveHistoryTableBody">
+               </tbody>
+            </table>
          </div>
 
          <div x-for-student>
@@ -96,18 +108,6 @@
                   <input type="date" name="toDate">
                </form>
                <button class="button-sd" id="applyLeaveBtn" onclick="javascript:applyForLeave()">Apply</button>
-            </div>
-
-            <div class="targetToShow" id="leaveHistory">
-               <form id="leaveHistoryForm">
-                  <span>Show </span> <input name="numResults" value="10" type="number"> <span>results</span>
-                  <br>
-                  <button class="button-sd" id="leaveHistoryBtn" onclick="javascript:getLeaveHistory()">Fetch</button>
-               </form>
-               <table>
-                  <tbody id="leaveHistoryTableBody">
-                  </tbody>
-               </table>
             </div>
 
          </div>

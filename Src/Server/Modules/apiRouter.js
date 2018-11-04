@@ -11,7 +11,8 @@ try{
    let user = await users.findOne({id: req.$token.id});
    let json = {
       type: req.$token.type,
-      name: user.name
+      name: user.name,
+      id: user.id
    }
 
    if(req.$token.type == 2){
@@ -26,6 +27,25 @@ try{
    console.debug(e);
    res.sendStatus(500);
 }  
+});
+
+app.post("/leaveHistory",(req,res)=>{
+   if(!req.body.numResults)
+      return res.sendStatus(400);
+
+   let query = {};
+   if(req.$token.type==2) query.id = req.$token.id 
+
+   leave
+   .find(query)
+   .limit(parseInt(req.body.numResults))
+   .then((docs)=>{
+      res.json(docs);
+   })
+   .catch((err)=>{
+      console.debug(err);
+      res.sendStatus(500);
+   });
 });
 
 app.use("/s",(req,res,next)=>{
@@ -48,22 +68,6 @@ app.post("/s/applyForLeave",(req,res)=>{
    })
    .then((doc)=>{
       res.sendStatus(200);
-   })
-   .catch((err)=>{
-      console.debug(err);
-      res.sendStatus(500);
-   });
-});
-
-app.post("/s/leaveHistory",(req,res)=>{
-   if(!req.body.numResults)
-      return res.sendStatus(400);
-
-   leave
-   .find({id: req.$token.id})
-   .limit(parseInt(req.body.numResults))
-   .then((docs)=>{
-      res.json(docs);
    })
    .catch((err)=>{
       console.debug(err);
