@@ -76,23 +76,46 @@ app.use("/f",(req,res,next)=>{
    else next();
 });
 
-app.post('/f/pendingApproval',async (req,res)=>{
-   let pages;
-   try{
-      pages = await leave.countDocuments({status: 0});
-   }catch(e){
-      return res.sendStatus(500);
-   }
+app.post('/f/pendingApproval',(req,res)=>{
+   let pages,docs,leavesApproved;
+
+   if(!req.body.page)
+      return res.sendStatus(400);
 
    leave
    .find({status: 0})
    .limit(10)
    .skip(10*(req.body.page-1))
-   .then((docs)=>{
+   .then((_docs)=>{
+      docs = _docs;
+      return leave.countDocuments({status: 0});
+   })
+   .then((_pages)=>{
+      pages = _pages;
+      let promises = [];
+      let date = new Date();
+      for(let i=0;i<docs.length;i++){
+         promises.push(leave.countDocuments({
+            id: req.$token.id, status: 1, monthYear:`${date.getMonth()}_${date.getFullYear()}`
+         }));
+      }
+      return Promise.all(promises);
+   })
+   .then((count) => {
+      leavesApproved = count;
+      let promises = [];
+      for(let i=0;i<docs.length;i++){
+         promises.push(users.findOne({id: docs[i].id}).select('name'));
+      }
+      return Promise.all(promises);
+   })
+   .then((names)=>{
       let obj = {
-         pages,
-         docs
-      };
+         names,
+         leavesApproved,
+         docs,
+         pages
+      }
       res.json(obj);
    })
    .catch((err)=>{

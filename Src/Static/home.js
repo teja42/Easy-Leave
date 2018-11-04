@@ -125,7 +125,10 @@ function pendingApproval(page){
    ajax('post','/api/f/pendingApproval',`page=${page}`)
    .then((resp)=>{
       let response = JSON.parse(resp.res);
+      console.log(response);
       let requests = response.docs;
+      let names = response.names;
+      let leavesApproved = response.leavesApproved;
       $("#pendingApprovalTotalPages").innerHTML = response.pages;
       let body = $("#pendingApprovalContent");
       body.innerHTML = null;
@@ -135,8 +138,8 @@ function pendingApproval(page){
          <div class='leave' x_id='${requests[i]._id}'>
             <h4>${requests[i].subject}</h4>
             <p>${requests[i].desc}</p>
-            <p>${requests[i].name} - ${requests[i].id}</p>
-            <strong>Leaves Approved this month : ${requests[i].leavesApproved}</strong>
+            <p>${names[i].name} - ${requests[i].id}</p>
+            <strong>Leaves Approved this month : ${leavesApproved[i]}</strong>
             <br>
             <button class="button-sd" onclick="javascript:processLeaveRequest(this,'${requests[i]._id}',${true})">Approve</button>
             <button class="button-sd red" onclick="javascript:processLeaveRequest(this,'${requests[i]._id}',${false})">Reject</button>
