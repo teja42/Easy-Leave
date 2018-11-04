@@ -73,11 +73,13 @@
    }
 
    function login(){
-      let btnAnim = buttonClickAnim($('#loginBtn'));
       $("#info").innerHTML = null;
 
       let id = $("#loginForm>input[name='id']").value;
       let password = $("#loginForm>input[name='password']").value;
+
+      let btnAnim = buttonClickAnim($('#loginBtn'));
+
       ajax('post','/auth/login',`id=${id}&password=${password}`)
       .then((success)=>{
          window.location = "/home";
@@ -93,7 +95,6 @@
    }
 
    function register(){
-      let btnAnim = buttonClickAnim($("#registerBtn"));
       $("#info").innerHTML = null;
 
       let id = $("#registerForm>input[name='id']").value;
@@ -105,6 +106,8 @@
          $("#info").insertAdjacentHTML("beforeEnd",`<p>Passwords don't match</p>`);
          return;
       }
+
+      let btnAnim = buttonClickAnim($("#registerBtn"));
 
       ajax(
          'post',
